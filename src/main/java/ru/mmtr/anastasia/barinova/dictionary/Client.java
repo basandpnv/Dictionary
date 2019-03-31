@@ -1,3 +1,5 @@
+package ru.mmtr.anastasia.barinova.dictionary;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -6,17 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main {
-    public static void main(String[] args) throws UnsupportedTranslationException {
-        try {
-            consoleMenu();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public static void consoleMenu() throws UnsupportedTranslationException, IOException {
+public class Client {
+    public static void consoleMenu() {
         ApplicationContext context = new ClassPathXmlApplicationContext("dict.xml");
-
+        FileWorker fileWorker=context.getBean(FileWorker.class);
         Translator client = context.getBean(Translator.class);
         File dictionaryFile;
         int numberDictionary;
@@ -24,7 +19,7 @@ public class Main {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             System.out.println("Введите путь к папке со словарями:");
             directory = reader.readLine();
-            File[] files =  client.setTranslator(directory).listFiles();
+            File[] files =  fileWorker.setTranslator(directory).listFiles();
             System.out.println();
             System.out.println("Выберите словарь  ");
             System.out.println("1. Буквенный словарь");
@@ -33,10 +28,10 @@ public class Main {
 
             numberDictionary = Integer.parseInt(reader.readLine());
 
-            dictionaryFile = client.find(numberDictionary,files);
+            dictionaryFile = fileWorker.find(numberDictionary,files);
             if(dictionaryFile!=null)
-            client.setDictionary(dictionaryFile);
-else
+                fileWorker.setDictionary(dictionaryFile);
+            else
                 throw new IllegalArgumentException("Файл со словарем не найден");
             String menu = "Выберите действие\n" + "1 - Просмотр словаря\n" + "2 - Удаление по ключу\n" + "3 - Поиск по ключу\n"
                     + "4 - Добавление записи\n" + "5 - Выход\n";
